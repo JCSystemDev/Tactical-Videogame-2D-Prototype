@@ -7,7 +7,8 @@ public class GameManager : MonoBehaviour
 {
     public Unit selectedUnit;
     public int playerTurn = 1;
-    public GameObject selectedUnitSquare;
+    public GameObject selectedUnitSquare1;
+    public GameObject selectedUnitSquare2;
 
     public void ResetTiles()
     {
@@ -26,8 +27,25 @@ public class GameManager : MonoBehaviour
 
         if (selectedUnit != null)
         {
-            selectedUnitSquare.SetActive(true);
+            if (playerTurn == 1)
+            {
+                selectedUnitSquare1.SetActive(true);
+                selectedUnitSquare1.transform.position = selectedUnit.transform.position;
+            }
+            else if (playerTurn == 2)
+            {
+                selectedUnitSquare2.SetActive(true);
+                selectedUnitSquare2.transform.position = selectedUnit.transform.position;
+            }
+            
+            
         }
+        else
+        {
+            selectedUnitSquare1.SetActive(false);
+            selectedUnitSquare2.SetActive(false);
+        }
+        
     }
 
     void EndTurn()
@@ -52,6 +70,8 @@ public class GameManager : MonoBehaviour
         foreach (Unit unit in FindObjectsOfType<Unit>())
         {
             unit.hasMoved = false;
+            unit.attackIcon.SetActive(false);
+            unit.hasAttacked = false;
         }
 
     }

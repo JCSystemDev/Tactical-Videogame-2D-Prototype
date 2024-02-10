@@ -47,9 +47,18 @@ TagManager:
   - name: Props
     uniqueID: 1145714365
     locked: 0
+  - name: Square
+    uniqueID: 2099640009
+    locked: 0
   - name: Characters
     uniqueID: 3503845345
     locked: 0
+  - name: Icon
+    uniqueID: 1107037553
+    locked: 0
   - name: FX
     uniqueID: 2192044185
+    locked: 0
+  - name: Cursor
+    uniqueID: 2993874897
     locked: 0
