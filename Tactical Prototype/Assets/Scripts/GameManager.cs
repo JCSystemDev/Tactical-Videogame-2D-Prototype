@@ -5,10 +5,13 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public int unitsRed, unitsBlue;
+    public AudioSource changeTurnSFX;
     public Unit selectedUnit;
     public int playerTurn = 1;
     public GameObject selectedUnitSquare1;
     public GameObject selectedUnitSquare2;
+    public bool movePiece; 
 
     public void ResetTiles()
     {
@@ -48,8 +51,10 @@ public class GameManager : MonoBehaviour
         
     }
 
-    void EndTurn()
+    public void EndTurn()
     {
+        movePiece = false;
+        changeTurnSFX.Play();
         if (playerTurn == 1)
         {
             playerTurn = 2;

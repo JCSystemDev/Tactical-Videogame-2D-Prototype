@@ -11,22 +11,23 @@ public class Unit : MonoBehaviour
     private List<Unit> _enemiesInRange = new List<Unit>();
     public bool hasAttacked;
     public GameObject attackIcon;
-    public GameObject lifeBar;
-    public Transform bar;
     public int tileSpeed;
     public bool hasMoved;
     public float moveSpeed;
     public int playerNumber;
-    public int health, healthMax;
+    public int health;
     public int attackDamage;
-    public int defenseDamage;
     public int armor;
     public Animator anim;
+    private SpriteRenderer spr;
+    public DamageIcon dmgIcon;
+    public AudioSource attackSfx, hitSFX, deadSFX, clickSFX, moveSFX;
 
     private void Start()
     {
         gm = FindObjectOfType<GameManager>();
         anim = GetComponent<Animator>();
+        spr = GetComponent<SpriteRenderer>();
 
     }
     
@@ -41,8 +42,9 @@ public class Unit : MonoBehaviour
         }
         else 
         {
-            if (playerNumber == gm.playerTurn)
+            if ((playerNumber == gm.playerTurn) && !gm.movePiece)
             {
+                clickSFX.Play();
                 if (gm.selectedUnit != null)
                 {
                     gm.selectedUnit.selected = false;
@@ -73,34 +75,55 @@ public class Unit : MonoBehaviour
     {
         hasAttacked = true;
         int enemyDamage = attackDamage - enemy.armor;
-        int myDamage = enemy.defenseDamage - armor;
 
         if (enemyDamage >= 1)
         {
+            DamageIcon instance = Instantiate(dmgIcon, 
+                new Vector3(enemy.transform.position.x, enemy.transform.position.y + 1, enemy.transform.position.z), 
+                Quaternion.identity);
+            instance.Setup(enemyDamage);
             enemy.health -= enemyDamage;
+            spr.sortingOrder = 1;
+            enemy.spr.sortingOrder = -1;
             anim.Play("Attack");
+            attackSfx.Play();
             enemy.anim.Play("Hurt");
+            hitSFX.Play();
         }
-
-        if (myDamage >= 1)
-        {
-            health -= myDamage;
-            anim.Play("Hurt");
-            enemy.anim.Play("Attack");
-        }
-
+        
         if (enemy.health <= 0)
         {
-            Destroy(enemy.gameObject, 1);
+            if (gm.playerTurn == 1)
+            {
+                gm.unitsRed--;
+            }
+            else if (gm.playerTurn == 2)
+            {
+                gm.unitsBlue--;
+            }
+            enemy.anim.Play("Dead");
+            enemy.deadSFX.Play();
+            Destroy(enemy.gameObject, 1f);
             GetWalkableTiles();
         }
 
         if (health <= 0)
         {
+            if (gm.playerTurn == 1)
+            {
+                gm.unitsBlue--;
+            }
+            else if (gm.playerTurn == 2)
+            {
+                gm.unitsRed--;
+            }
             gm.ResetTiles();
-            Destroy(this.gameObject, 1);
+            anim.Play("Dead");
+            deadSFX.Play();
+            Destroy(this.gameObject, 1f);
         }
         
+
     }
 
     void GetWalkableTiles()
@@ -153,12 +176,20 @@ public class Unit : MonoBehaviour
 
     public void Move(Vector2 tilePos)
     {
-        gm.ResetTiles();
-        StartCoroutine(StartMovement(tilePos));
+        if (!gm.movePiece)
+        {
+            gm.movePiece = true;
+            gm.ResetTiles();
+            StartCoroutine(StartMovement(tilePos));
+            
+        }
+        
     }
 
     IEnumerator StartMovement(Vector2 tilePos)
     {
+        moveSFX.Play();
+        
         while (transform.position.x != tilePos.x)
         {
             transform.position = Vector2.MoveTowards(transform.position, 
