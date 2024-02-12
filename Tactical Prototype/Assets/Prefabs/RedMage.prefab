@@ -1021,7 +1021,7 @@ MonoBehaviour:
   moveSpeed: 8
   playerNumber: 2
   health: 3
-  attackDamage: 4
+  attackDamage: 5
   armor: 0
   anim: {fileID: 0}
   dmgIcon: {fileID: 3008688222590969197, guid: e47ce195d9ce30f499fa6f239a593a1d, type: 3}
